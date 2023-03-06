@@ -29,6 +29,7 @@
 #define OP_XORI_EAX 0x0d
 #define OP_IMM      0x20
 #define OP_MOV      0x22
+#define OP_LEA      0x23
 // Whole byte opcodes
 #define OP_PUSH 0x50
 #define OP_POP  0x58
@@ -210,4 +211,67 @@ static unsigned gen_op_unary(uint8_t* out, unsigned reg, uint8_t opcode) {
     }
     *out = opcode | (reg & 0x7);
     return len;
+}
+
+static unsigned gen_lea_disp8(uint8_t* out, uint width, uint mem, uint reg, uint disp8) {
+    return gen_op_indirect_disp8(out, width, mem, reg, OP_LEA, 0, disp8).len;
+}
+
+uint8_t* generate_bunki_yield(uint8_t* mem, size_t mem_len, size_t mask) {
+    mem += gen_op_unary (mem, RBP, OP_PUSH);
+    mem += gen_op_unary (mem, RBX, OP_PUSH);
+    mem += gen_op_unary (mem, R12, OP_PUSH);
+    mem += gen_op_unary (mem, R13, OP_PUSH);
+    mem += gen_op_unary (mem, R14, OP_PUSH);
+    mem += gen_op_unary (mem, R15, OP_PUSH);
+    mem += gen_op_imm8  (mem, 1, RSP, OP_EX_SUB, 8).len;
+    mem += gen_op_reg   (mem, 1, RAX, RSP, OP_MOV).len;
+    mem += gen_lea_disp8(mem, 1, RSP, RAX, 0xf8);
+
+    return mem;
+}
+
+
+
+#include <stdio.h>
+int main() {
+    printf(".intel_syntax noprefix\n.global thingy\nthingy:\n");
+    uint8_t  mem[1024] = { 0 };
+    uint8_t* code = generate_bunki_yield(mem, 1024, 0);
+    for(int i = 0; i < (code - mem); i++) {
+        printf(".byte 0x%02x\n", mem[i]);
+    }
+    //for(int i = 0; i < 64; i++) {
+    //    code[0] = 0x01;
+    //    code[1] = 0x04;
+    //    code[2] = i;
+    //    code += 3;
+    //}
+    //code += gen_push_reg(code, RBP);
+    //code += gen_push_reg(code, RBX);
+    //code += gen_push_reg(code, R12);
+    //code += gen_push_reg(code, R13);
+    //code += gen_push_reg(code, R14);
+    //code += gen_push_reg(code, R15);
+    //code += gen_xor32_imm8(code, RAX, -1);
+    //code += gen_xor64_imm8(code, RAX, -1);
+    //code += gen_op32_indirect_read(code, RAX, RCX, OP_ADD);
+
+    /*
+    off += gen_mov32_reg(buff + off, RDI, R8);
+    off += gen_mov64_reg(buff + off, RDI, R8);
+    off += gen_and32_reg(buff + off, RDI, R8);
+    off += gen_and64_reg(buff + off, RDI, R8);
+    off += gen_add32_reg(buff + off, RDI, R8);
+    off += gen_add64_reg(buff + off, RDI, R8);
+    off += gen_push_reg(buff + off, RCX);
+    off += gen_push_reg(buff + off, R12);
+    off += gen_pop_reg(buff + off, RDX);
+    off += gen_pop_reg(buff + off, R13);
+    for(int i = 0; i < off; i++) {
+        printf(".byte 0x%02x\n", buff[i]);
+    }
+    printf("Ran 0x%02x\n", 0x20 >> 2);
+    */
+    return 0;
 }
