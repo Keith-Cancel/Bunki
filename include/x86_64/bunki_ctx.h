@@ -44,7 +44,8 @@ struct stack_ctx_s {
 
 #define ARCH_STK_ALIGN 0x10U
 
-unsigned bunki_patch_call_yield(uint32_t stack_size);
-bunki_t  bunki_native_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg, uintptr_t stack_end);
+unsigned  bunki_patch_call_yield(uint32_t stack_size);
+bunki_t   bunki_native_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg, uintptr_t stack_end);
+uintptr_t bunki_ctx_stack_start(void);
 
 #endif
