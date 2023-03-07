@@ -180,7 +180,7 @@ __bunki_patch3__:
 
     .global bunki_ctx_data_get
     .align 16
-bunki_ctx_data_get
+bunki_ctx_data_get:
     call bunki_ctx_stack_start
     mov rax, [rax - 0x32]
     ret
