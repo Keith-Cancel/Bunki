@@ -32,6 +32,29 @@
     push r13
     push r14
     push r15
+    #if defined(_WIN64)
+        push rdi
+        push rsi
+        # Get TIB pointer
+        mov  rax, gs:0x30
+        push [rax + 0x1478]
+        push [rax + 0x0010]
+        push [rax + 0x0008]
+        #if !defined(BUNKI_NO_WIN64_XMM)
+            # Store xmm6 and xmm7 in the shadow/home space
+            movaps [rsp + 0x60], xmm6
+            movaps [rsp + 0x70], xmm7
+            sub    rsp, 0x80
+            movaps [rsp + 0x00], xmm15
+            movaps [rsp + 0x10], xmm14
+            movaps [rsp + 0x20], xmm13
+            movaps [rsp + 0x30], xmm12
+            movaps [rsp + 0x40], xmm11
+            movaps [rsp + 0x50], xmm10
+            movaps [rsp + 0x60], xmm9
+            movaps [rsp + 0x70], xmm8
+        #endif
+    #endif
     #if !defined(BUNKI_SHARE_FCW_MXCSR)
         sub      rsp, 8
         stmxcsr [rsp]
@@ -48,6 +71,31 @@
         ldmxcsr [rsp]
         fldcw   [rsp + 0x04]
         add     rsp, 8
+    #endif
+    #if defined(_WIN64)
+        #if !defined(BUNKI_NO_WIN64_XMM)
+            movaps xmm15, [rsp + 0x00]
+            movaps xmm14, [rsp + 0x10]
+            movaps xmm13, [rsp + 0x20]
+            movaps xmm12, [rsp + 0x30]
+            movaps xmm11, [rsp + 0x40]
+            movaps xmm10, [rsp + 0x50]
+            movaps xmm9,  [rsp + 0x60]
+            movaps xmm8,  [rsp + 0x70]
+            add    rsp,   0x80
+            # load xmm6 and xmm7 from the shadow/home space
+            movaps xmm7,  [rsp + 0x70]
+            movaps xmm6,  [rsp + 0x60]
+        #endif
+        mov rax, gs:0x30
+        # needs to be set for things like __chkstk to work properly
+        pop [rax + 0x0008]
+        pop [rax + 0x0010]
+        # from what I gather not setting this can trigger some
+        # stack corruption protection code on windows and other problems.
+        pop [rax + 0x1478]
+        pop rsi
+        pop rdi
     #endif
     pop r15
     pop r14
