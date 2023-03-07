@@ -97,3 +97,13 @@ void bunki_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg) {
     ptr -= 0x7;
     memcpy((void*)ptr, &ret, sizeof(void*));
 }
+
+void* bunki_ctx_data_get(void) {
+    void* ptr;
+    memcpy(&ptr, (void*)(bunki_ctx_stack_start() - 0x31), sizeof(void*));
+    return ptr;
+}
+
+void bunki_ctx_data_set(void* data) {
+    memcpy((void*)(bunki_ctx_stack_start() - 0x31), &data, sizeof(void*));
+}
