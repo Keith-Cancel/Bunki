@@ -52,7 +52,7 @@ unsigned bunki_init(uint32_t stack_size) {
     #if defined(BUNKI_STACK_CONST)
         return 0;
     #else
-        if(!is_power2(stack_size) || stack_size <=  bunki_stack_min_size()) {
+        if(!is_power2(stack_size) || stack_size <  bunki_stack_min_size()) {
             return 1;
         }
         global_stack_size = stack_size;
