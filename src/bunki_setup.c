@@ -35,43 +35,8 @@ static unsigned is_power2(uint32_t number) {
     #endif
 }
 
-void* bunki_push_stack(bunki_t* ctx, size_t allocation_length) {
-    uintptr_t stk = (uintptr_t)(*ctx);
-    stk -= allocation_length;
-    stk &= ALIGN_MASK(ARCH_STK_ALIGN);
-    *ctx = (bunki_t)stk;
-    return (void*)stk;
-}
-
-// Push data onto a stack before finalizing a ctx with this. Handy in
-// conjuction with the arg parameter for make_ctx.
-void* bunki_push_stack_data(bunki_t* ctx, size_t data_length, void* data) {
-    void* stk = bunki_push_stack(ctx, data_length);
-    memcpy(stk, data, data_length);
-    return stk;
-}
-
-bunki_t bunki_make_stack_call_ctx(void* stack_mem) {
-    uintptr_t stk = (uintptr_t)stack_mem;
-    stk += global_stack_size;
-    bunki_t ctx = (bunki_t)stk;
-    bunki_push_stack(&ctx, 2 * sizeof(bunki_t));
-    return ctx;
-}
-
-bunki_t bunki_make_stack_swap_ctx(void* stack_mem, size_t stack_length) {
-    uintptr_t stk = (uintptr_t)stack_mem;
-    stk += stack_length;
-    return (bunki_t)stk;
-}
-
-uint32_t bunki_min_swap_stack_size(void) {
-    return MULT_OF_ALIGN(sizeof(struct stack_ctx_s) + sizeof(void (*)(void)), ARCH_STK_ALIGN);
-}
-
-uint32_t bunki_min_call_stack_size(void) {
-    uint32_t size = 2 * sizeof(bunki_t);
-    size += sizeof(struct stack_ctx_s);
+uint32_t bunki_stack_min_size(void) {
+    uint32_t size = 4 * sizeof(void*) + sizeof(struct stack_ctx_s);
     // round up to nearest power of 2
     size--;
     size |= size >> 1;
@@ -83,14 +48,52 @@ uint32_t bunki_min_call_stack_size(void) {
     return size;
 }
 
-unsigned bunki_call_init(uint32_t stack_size) {
+unsigned bunki_init(uint32_t stack_size) {
     #if defined(BUNKI_STACK_CONST)
         return 0;
     #else
-        if(!is_power2(stack_size) || stack_size <= bunki_min_call_stack_size()) {
+        if(!is_power2(stack_size) || stack_size <=  bunki_stack_min_size()) {
             return 1;
         }
         global_stack_size = stack_size;
-        return (bunk_patch_call_yield(stack_size) << 1);
+        return (bunki_patch_call_yield(stack_size) << 1);
     #endif
+}
+
+void* bunki_stack_push(bunki_t* ctx, size_t allocation_length) {
+    uintptr_t stk = (uintptr_t)(*ctx);
+    stk -= allocation_length;
+    stk &= ALIGN_MASK(ARCH_STK_ALIGN);
+    *ctx = (bunki_t)stk;
+    return (void*)stk;
+}
+
+// Push data onto a stack before finalizing a ctx with this. Handy in
+// conjuction with the arg parameter for a make ctx function.
+void* bunki_stack_push_data(bunki_t* ctx, size_t data_length, void* data) {
+    void* stk = bunki_stack_push(ctx, data_length);
+    memcpy(stk, data, data_length);
+    return stk;
+}
+
+bunki_t bunki_init_stack_ctx(void* stack_mem) {
+    uintptr_t stk = (uintptr_t)stack_mem;
+    stk += global_stack_size;
+    bunki_t ctx   = (bunki_t)stk;
+    void** ptrs = bunki_stack_push(&ctx, 4 * sizeof(void*));
+    // ptrs[0] user data
+    ptrs[1] = stack_mem; // The stack base.
+    // ptrs[2] caller ctx
+    // ptrs[3] callee ctx
+    return ctx;
+}
+
+void bunki_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg) {
+    uintptr_t ptr = (uintptr_t)ctx;
+    ptr &= -((uintptr_t)global_stack_size);
+    bunki_t ret = bunki_native_finalize_ctx(ctx, func, arg, ptr);
+    ptr = (uintptr_t)ret;
+    ptr |= global_stack_size - 1;
+    ptr -= 0x7;
+    memcpy((void*)ptr, &ret, sizeof(void*));
 }
