@@ -55,7 +55,7 @@ bunki_t bunki_make_stack_call_ctx(void* stack_mem) {
     uintptr_t stk = (uintptr_t)stack_mem;
     stk += global_stack_size;
     bunki_t ctx = (bunki_t)stk;
-    bunki_push_stack(&ctx, 16);
+    bunki_push_stack(&ctx, 2 * sizeof(bunki_t));
     return ctx;
 }
 
