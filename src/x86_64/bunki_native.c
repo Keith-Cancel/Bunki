@@ -6,6 +6,7 @@ void bunki_init_ctx(void);
 extern uint32_t __bunki_patch0__;
 extern uint32_t __bunki_patch1__;
 extern uint32_t __bunki_patch2__;
+extern uint32_t __bunki_patch3__;
 
 #define ALIGN_MASK(val) (~((size_t)val - 1))
 
@@ -102,6 +103,7 @@ unsigned bunki_patch_call_yield(uint32_t stack_size) {
     ret |= patch_obj_mprotect(&__bunki_patch0__, sizeof(uint32_t), OBJ_RWE);
     ret |= patch_obj_mprotect(&__bunki_patch1__, sizeof(uint32_t), OBJ_RWE);
     ret |= patch_obj_mprotect(&__bunki_patch2__, sizeof(uint32_t), OBJ_RWE);
+    ret |= patch_obj_mprotect(&__bunki_patch3__, sizeof(uint32_t), OBJ_RWE);
     if(ret) {
         goto done;
     }
@@ -109,10 +111,12 @@ unsigned bunki_patch_call_yield(uint32_t stack_size) {
     memcpy(&__bunki_patch0__, &stack_size, sizeof(uint32_t));
     memcpy(&__bunki_patch1__, &stack_size, sizeof(uint32_t));
     memcpy(&__bunki_patch2__, &stack_size, sizeof(uint32_t));
+    memcpy(&__bunki_patch3__, &stack_size, sizeof(uint32_t));
 done:
     ret |= patch_obj_mprotect(&__bunki_patch0__, sizeof(uint32_t), OBJ_RE);
     ret |= patch_obj_mprotect(&__bunki_patch1__, sizeof(uint32_t), OBJ_RE);
     ret |= patch_obj_mprotect(&__bunki_patch2__, sizeof(uint32_t), OBJ_RE);
+    ret |= patch_obj_mprotect(&__bunki_patch3__, sizeof(uint32_t), OBJ_RE);
     return ret;
 }
 #endif

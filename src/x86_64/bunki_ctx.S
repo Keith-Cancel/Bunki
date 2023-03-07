@@ -167,6 +167,16 @@ bunki_set_rax:
     xor eax, eax
     jmp bunki_done
 
+    .global bunki_ctx_stack_start
+    .global __bunki_patch3__
+    .align 16
+bunki_ctx_stack_start:
+    mov rax, rsp
+    .byte 0x48, 0x0d
+__bunki_patch3__:
+    .long ((BUNKI_STACK_CONST) - 1)
+    ret
+
     .global bunki_swap_ctx
     .align 16
 bunki_swap_ctx:
