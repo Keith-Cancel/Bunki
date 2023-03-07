@@ -24,7 +24,7 @@
     #define BUNKI_STACK_CONST 0x01
 #endif
 
-.macro swap_ctx save_ptr, save_off, load_ptr, load_off
+.macro save_ctx save_ptr, save_off
     # save the current context on the stack
     push rbp
     push rbx
@@ -38,6 +38,9 @@
         fnstcw  [rsp + 0x04]
     #endif
     mov [\save_ptr - \save_off], rsp
+.endm
+
+.macro load_ctx load_ptr, load_off
     # load the context we are swapping too
     mov rsp, [\load_ptr - \load_off]
     #if !defined(BUNKI_SHARE_FCW_MXCSR)
@@ -59,16 +62,16 @@
     .global __bunki_patch0__
     .align  16
 bunki_call:
-    #if defined(_WIN64) || 1
-        .byte 0x48, 0x81, 0xca
+    #if defined(_WIN64)
+        .byte 0x48, 0x81, 0xc9
     #endif
-    #if defined(SYSTEM_V_ABI) && 0
-        .byte 0x48, 0x81, 0xce
+    #if defined(SYSTEM_V_ABI)
+        .byte 0x48, 0x81, 0xcf
     #endif
 __bunki_patch0__:
     .long ((BUNKI_STACK_CONST) - 1)
-    swap_ctx ARG2, 0xf, ARG2, 0x7
-    mov rax, ARG1
+    save_ctx ARG1, 0xf
+    load_ctx ARG1, 0x7
     ret
 
     .global bunki_yield
@@ -79,11 +82,28 @@ bunki_yield:
     .byte 0x48, 0x0d
 __bunki_patch1__:
     .long ((BUNKI_STACK_CONST) - 1)
-    swap_ctx rax, 0x7, rax, 0xf
-    mov      rax, ARG1
+    save_ctx rax, 0x7
+    load_ctx rax, 0xf
+    mov rax, ARG1
     ret
 
+    .global bunki_init_ctx
+    .global __bunki_patch2__
+    .align 16
+bunki_init_ctx:
+    mov  ARG1, r15
+    call rbx
+    mov  rdx, rsp
+    .byte 0x48, 0x81, 0xca
+__bunki_patch2__:
+    .long ((BUNKI_STACK_CONST) - 1)
+    load_ctx rdx, 0xf
+    ret
+
+    .global bunki_swap_ctx
+    .align 16
 bunki_swap_ctx:
-    swap_ctx ARG3, 0, ARG2, 0
+    save_ctx ARG3, 0x0
+    load_ctx ARG2, 0x0
     mov rax, ARG1
     ret
