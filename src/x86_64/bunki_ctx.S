@@ -175,6 +175,21 @@ bunki_ctx_stack_start:
     .byte 0x48, 0x0d
 __bunki_patch3__:
     .long ((BUNKI_STACK_CONST) - 1)
+    inc rax
+    ret
+
+    .global bunki_ctx_data_get
+    .align 16
+bunki_ctx_data_get
+    call bunki_ctx_stack_start
+    mov rax, [rax - 0x32]
+    ret
+
+    .global bunki_ctx_data_set
+    .align 16
+bunki_ctx_data_set:
+    call bunki_ctx_stack_start
+    mov [rax - 0x32], ARG1
     ret
 
     .global bunki_swap_ctx
