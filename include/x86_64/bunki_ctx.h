@@ -33,8 +33,8 @@ struct stack_ctx_s {
     uint64_t r14;
     uint64_t r13;
     uint64_t r12;
-    uint64_t rbx;
     uint64_t rbp;
+    uint64_t rbx;
     uint64_t rip; // The rip or return ptr
     // Windows shadow/home space
     #ifdef _WIN64
