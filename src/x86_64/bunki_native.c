@@ -114,6 +114,5 @@ done:
     ret |= patch_obj_mprotect(&__bunki_patch1__, sizeof(uint32_t), OBJ_RE);
     ret |= patch_obj_mprotect(&__bunki_patch2__, sizeof(uint32_t), OBJ_RE);
     return ret;
-
 }
 #endif
