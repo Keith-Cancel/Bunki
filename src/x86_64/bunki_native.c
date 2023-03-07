@@ -2,11 +2,12 @@
 #include "bunki_ctx.h"
 #include <string.h>
 
-#include <stdio.h>
-#include <errno.h>
-
+void bunki_init_ctx(void);
 extern uint32_t __bunki_patch0__;
 extern uint32_t __bunki_patch1__;
+extern uint32_t __bunki_patch2__;
+
+#define ALIGN_MASK(val) (~((size_t)val - 1))
 
 #if defined(_WIN32)
     #include <windows.h>
@@ -69,48 +70,49 @@ extern uint32_t __bunki_patch1__;
 
 #endif
 
-/*
-void bunki_finalize_ctx(bunki_t* ctx, uintptr_t (*func)(void*), void* arg) {
-    uintptr_t stk = (uintptr_t)*ctx;
+bunki_t bunki_native_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg, uintptr_t stack_end) {
+    uintptr_t stk = (uintptr_t)ctx;
     // If stack alignment does not match use a little space to fix that.
     stk &= ALIGN_MASK(ARCH_STK_ALIGN);
-    struct stack_ctx* new_ctx = (struct stack_ctx_s*)(stk - sizeof(struct stack_ctx_s));
+    struct stack_ctx_s* new_ctx = (struct stack_ctx_s*)(stk - sizeof(struct stack_ctx_s));
     // init_ctx moves arg where needed for calling argument then jumps to func.
-    new_ctx->rip = (uintptr_t)init_ctx;
-    new_ctx->r12 = (uintptr_t)func;
-    new_ctx->r13 = (uintptr_t)arg;
+    new_ctx->rip = (uintptr_t)bunki_init_ctx;
+    new_ctx->rbx = (uintptr_t)func;
+    new_ctx->r15 = (uintptr_t)arg;
     #if !defined(BUNKI_SHARE_FCW_MXCSR)
-    // https://docs.microsoft.com/en-us/cpp/build/x64-calling-convention?view=vs-2019#fpcsr
-    new_ctx->fcw = 0x17F;
-    // https://www.amd.com/system/files/TechDocs/24592.pdf page 113 use default reset value
-    // Bits 7-12 should be set
-    // MS uses same reset value
-    // https://docs.microsoft.com/en-us/cpp/build/x64-calling-convention?view=vs-2019#mxcsr
-    new_ctx->mxcsr = 0x1F80;
+        // https://docs.microsoft.com/en-us/cpp/build/x64-calling-convention?view=vs-2019#fpcsr
+        new_ctx->fcw = 0x17F;
+        // https://www.amd.com/system/files/TechDocs/24592.pdf page 113 use default reset value
+        // Bits 7-12 should be set
+        // MS uses same reset value
+        // https://docs.microsoft.com/en-us/cpp/build/x64-calling-convention?view=vs-2019#mxcsr
+        new_ctx->mxcsr = 0x1F80;
     #endif
     #ifdef _WIN64
-        ctx->stk_base    = stk;
-        ctx->stk_limit   = (uintptr_t)stack;
-        ctx->stk_dealloc = (uintptr_t)stack;
+        new_ctx->stk_base    = stk;
+        new_ctx->stk_limit   = stack_end;
+        new_ctx->stk_dealloc = stack_end;
     #endif
-    *rsp = ctx;
+    return new_ctx;
 }
-*/
 
 #if !defined(BUNKI_STACK_CONST)
-unsigned bunk_patch_call_yield(uint32_t stack_size) {
+unsigned bunki_patch_call_yield(uint32_t stack_size) {
     unsigned ret = 0;
     ret |= patch_obj_mprotect(&__bunki_patch0__, sizeof(uint32_t), OBJ_RWE);
     ret |= patch_obj_mprotect(&__bunki_patch1__, sizeof(uint32_t), OBJ_RWE);
+    ret |= patch_obj_mprotect(&__bunki_patch2__, sizeof(uint32_t), OBJ_RWE);
     if(ret) {
         goto done;
     }
     stack_size -= 1;
     memcpy(&__bunki_patch0__, &stack_size, sizeof(uint32_t));
     memcpy(&__bunki_patch1__, &stack_size, sizeof(uint32_t));
+    memcpy(&__bunki_patch2__, &stack_size, sizeof(uint32_t));
 done:
     ret |= patch_obj_mprotect(&__bunki_patch0__, sizeof(uint32_t), OBJ_RE);
     ret |= patch_obj_mprotect(&__bunki_patch1__, sizeof(uint32_t), OBJ_RE);
+    ret |= patch_obj_mprotect(&__bunki_patch2__, sizeof(uint32_t), OBJ_RE);
     return ret;
 
 }
