@@ -36,10 +36,10 @@
         push rdi
         push rsi
         # Get TIB pointer
-        mov  rax, gs:0x30
-        push [rax + 0x1478]
-        push [rax + 0x0010]
-        push [rax + 0x0008]
+        mov  rdi, gs:0x30
+        push [rdi + 0x1478]
+        push [rdi + 0x0010]
+        push [rdi + 0x0008]
         #if !defined(BUNKI_NO_WIN64_XMM)
             # Store xmm6 and xmm7 in the shadow/home space
             movaps [rsp + 0x60], xmm6
@@ -87,13 +87,13 @@
             movaps xmm7,  [rsp + 0x70]
             movaps xmm6,  [rsp + 0x60]
         #endif
-        mov rax, gs:0x30
+        mov rdi, gs:0x30
         # needs to be set for things like __chkstk to work properly
-        pop [rax + 0x0008]
-        pop [rax + 0x0010]
+        pop [rdi + 0x0008]
+        pop [rdi + 0x0010]
         # from what I gather not setting this can trigger some
         # stack corruption protection code on windows and other problems.
-        pop [rax + 0x1478]
+        pop [rdi + 0x1478]
         pop rsi
         pop rdi
     #endif
@@ -149,9 +149,13 @@ __bunki_patch2__:
     push ARG1
     push rbx
     #if defined(_WIN64)
-        sub  rsp, 216
+        #if defined(BUNKI_NO_WIN64_XMM)
+            sub rsp, 88
+        #else
+            sub rsp, 216
+        #endif
     #else
-        sub  rsp, 48
+        sub rsp, 48
     #endif
     mov  [rbx - 0x7], rsp
 bunki_done:
