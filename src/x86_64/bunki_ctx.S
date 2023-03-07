@@ -26,8 +26,8 @@
 
 .macro save_ctx save_ptr, save_off
     # save the current context on the stack
-    push rbp
     push rbx
+    push rbp
     push r12
     push r13
     push r14
@@ -53,8 +53,8 @@
     pop r14
     pop r13
     pop r12
-    pop rbx
     pop rbp
+    pop rbx
 .endm
 
     .text
@@ -93,12 +93,27 @@ __bunki_patch1__:
 bunki_init_ctx:
     mov  ARG1, r15
     call rbx
-    mov  rdx, rsp
-    .byte 0x48, 0x81, 0xca
+    mov  rbx, rsp
+    .byte 0x48, 0x81, 0xcb
 __bunki_patch2__:
     .long ((BUNKI_STACK_CONST) - 1)
-    load_ctx rdx, 0xf
+    lea  ARG1, [rip + bunki_set_rax]
+    push ARG1
+    push rbx
+    #if defined(_WIN64)
+        sub  rsp, 216
+    #else
+        sub  rsp, 48
+    #endif
+    mov  [rbx - 0x7], rsp
+bunki_done:
+    load_ctx rbx, 0xf
     ret
+
+    .align 16
+bunki_set_rax:
+    xor eax, eax
+    jmp bunki_done
 
     .global bunki_swap_ctx
     .align 16
