@@ -6,10 +6,16 @@
 
 typedef struct stack_ctx_s* bunki_t;
 
-void*   bunki_push_stack(bunki_t* ctx, size_t allocation_length);
-void*   bunki_push_stack_data(bunki_t* ctx, size_t data_length, void* data);
+unsigned bunki_init(uint32_t stack_size);
+uint32_t bunki_stack_min_size(void);
 
-bunki_t bunki_make_stack_call_ctx(void* stack_mem);
-bunki_t bunki_make_stack_swap_ctx(void* stack_mem, size_t stack_length);
+void*   bunki_stack_push(bunki_t* ctx, size_t allocation_length);
+void*   bunki_stack_push_data(bunki_t* ctx, size_t data_length, void* data);
+
+bunki_t bunki_init_stack_ctx(void* stack_mem);
+void    bunki_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg);
+
+uintptr_t bunki_call(bunki_t ctx);
+void      bunki_yield(uintptr_t ret);
 
 #endif
