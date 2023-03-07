@@ -18,4 +18,8 @@ void    bunki_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg);
 uintptr_t bunki_call(bunki_t ctx);
 void      bunki_yield(uintptr_t ret);
 
+// Context local Storage functions
+void* bunki_ctx_data_get(void);
+void  bunki_ctx_data_set(void* data);
+
 #endif
