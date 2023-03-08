@@ -122,10 +122,10 @@
 .endm
 
     .text
-    .global bunki_call
+    .global bunki_resume
     .global __bunki_patch0__
     .align  16
-bunki_call:
+bunki_resume:
     #if defined(_WIN64)
         .byte 0x48, 0x81, 0xc9
     #endif

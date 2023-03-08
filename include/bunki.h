@@ -15,7 +15,7 @@ void*   bunki_stack_push_data(bunki_t* ctx, size_t data_length, void* data);
 bunki_t bunki_init_stack_ctx(void* stack_mem);
 void    bunki_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg);
 
-uintptr_t bunki_call(bunki_t ctx);
+uintptr_t bunki_resume(bunki_t ctx);
 void      bunki_yield(uintptr_t ret);
 
 // Context local Storage functions
