@@ -35,6 +35,19 @@ static unsigned is_power2(uint32_t number) {
     #endif
 }
 
+static uintptr_t get_stack_start(bunki_t ctx) {
+    uintptr_t ret = (uintptr_t)ctx;
+    ret |= global_stack_size - 1;
+    ret += 1;
+    return ret;
+}
+
+static uintptr_t get_stack_base(bunki_t ctx) {
+    uintptr_t ret = (uintptr_t)ctx;
+    ret &= -((uintptr_t)global_stack_size);
+    return ret;
+}
+
 uint32_t bunki_stack_min_size(void) {
     uint32_t size = 4 * sizeof(void*) + sizeof(struct stack_ctx_s);
     // round up to nearest power of 2
@@ -80,7 +93,7 @@ bunki_t bunki_init_stack_ctx(void* stack_mem) {
     uintptr_t stk = (uintptr_t)stack_mem;
     stk += global_stack_size;
     bunki_t ctx   = (bunki_t)stk;
-    void** ptrs = bunki_stack_push(&ctx, 4 * sizeof(void*));
+    void** ptrs   = bunki_stack_push(&ctx, 4 * sizeof(void*));
     // ptrs[0] user data
     ptrs[1] = stack_mem; // The stack base.
     // ptrs[2] caller ctx
@@ -89,11 +102,9 @@ bunki_t bunki_init_stack_ctx(void* stack_mem) {
 }
 
 void bunki_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg) {
-    uintptr_t ptr = (uintptr_t)ctx;
-    ptr &= -((uintptr_t)global_stack_size);
-    bunki_t ret = bunki_native_finalize_ctx(ctx, func, arg, ptr);
-    ptr = (uintptr_t)ret;
-    ptr |= global_stack_size - 1;
-    ptr -= 0x7;
+    uintptr_t ptr = get_stack_base(ctx);
+    bunki_t ret   = bunki_native_finalize_ctx(ctx, func, arg, ptr);
+    ptr  = get_stack_start(ret);
+    ptr -= 0x8;
     memcpy((void*)ptr, &ret, sizeof(void*));
 }
