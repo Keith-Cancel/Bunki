@@ -81,8 +81,14 @@ bunki_t bunki_native_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* a
     new_ctx->rbx = (uintptr_t)func;
     new_ctx->r15 = (uintptr_t)arg;
     #if !defined(BUNKI_SHARE_FCW_MXCSR)
-        // https://docs.microsoft.com/en-us/cpp/build/x64-calling-convention?view=vs-2019#fpcsr
-        new_ctx->fcw = 0x17F;
+        #if defined(_WIN32)
+            // https://docs.microsoft.com/en-us/cpp/build/x64-calling-convention?view=vs-2019#fpcsr
+            new_ctx->fcw = 0x17F;
+        #else
+            // https://github.com/torvalds/linux/blob/63355b9884b3d1677de6bd1517cd2b8a9bf53978/arch/x86/kernel/fpu/core.c#L483
+            new_ctx->fcw = 0x37f;
+        #endif
+
         // https://www.amd.com/system/files/TechDocs/24592.pdf page 113 use default reset value
         // Bits 7-12 should be set
         // MS uses same reset value
