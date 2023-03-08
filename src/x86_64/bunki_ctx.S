@@ -145,7 +145,7 @@ bunki_init_ctx:
     .byte 0x48, 0x81, 0xcb
 __bunki_patch2__:
     .long ((BUNKI_STACK_CONST) - 1)
-    lea  ARG1, [rip + bunki_set_rax]
+    lea ARG1, [rip + bunki_set_rax]
     push ARG1
     push rbx
     #if defined(_WIN64)
@@ -157,7 +157,7 @@ __bunki_patch2__:
     #else
         sub rsp, 48
     #endif
-    mov  [rbx - 0x7], rsp
+    mov [rbx - 0x7], rsp
 bunki_done:
     load_ctx rbx, 0xf
     ret
@@ -182,14 +182,14 @@ __bunki_patch3__:
     .align 16
 bunki_ctx_data_get:
     call bunki_ctx_stack_start
-    mov rax, [rax - 0x32]
+    mov rax, [rax - 0x20]
     ret
 
     .global bunki_ctx_data_set
     .align 16
 bunki_ctx_data_set:
     call bunki_ctx_stack_start
-    mov [rax - 0x32], ARG1
+    mov [rax - 0x20], ARG1
     ret
 
     .global bunki_swap_ctx
