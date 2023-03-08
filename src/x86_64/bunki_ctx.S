@@ -24,6 +24,22 @@
     #define BUNKI_STACK_CONST 0x01
 #endif
 
+#if defined(_WIN64) && defined(BUNKI_NO_WIN64_XMM)
+    #define WIN_SZ 168
+#elif defined(_WIN64)
+    #define WIN_SZ 40
+#else
+    #define WIN_SZ 0
+#endif
+
+#if !defined(BUNKI_SHARE_FCW_MXCSR)
+    #define FCW_SAVE 8
+#else
+    #define FCW_SAVE 0
+#endif
+
+#define CTX_SZ (56 + FCW_SAVE + WIN_SZ)
+
 .macro save_ctx save_ptr, save_off
     # save the current context on the stack
     push rbx
@@ -145,17 +161,13 @@ bunki_init_ctx:
     .byte 0x48, 0x81, 0xcb
 __bunki_patch2__:
     .long ((BUNKI_STACK_CONST) - 1)
-    lea ARG1, [rip + bunki_set_rax]
+    lea  ARG1, [rip + bunki_set_rax]
     push ARG1
     push rbx
-    #if defined(_WIN64)
-        #if defined(BUNKI_NO_WIN64_XMM)
-            sub rsp, 88
-        #else
-            sub rsp, 216
-        #endif
-    #else
-        sub rsp, 48
+    sub  rsp, (CTX_SZ - 16)
+    #if !defined(BUNKI_SHARE_FCW_MXCSR)
+        stmxcsr [rsp]
+        fnstcw  [rsp + 0x04]
     #endif
     mov [rbx - 0x7], rsp
 bunki_done:
