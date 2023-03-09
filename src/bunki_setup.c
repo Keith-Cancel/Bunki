@@ -95,7 +95,7 @@ bunki_t bunki_init_stack_ctx(void* stack_mem) {
     bunki_t ctx   = (bunki_t)stk;
     void** ptrs   = bunki_stack_push(&ctx, 4 * sizeof(void*));
     // ptrs[0] user data
-    ptrs[1] = stack_mem; // The stack base.
+    // ptrs[1] the large stack pointer
     // ptrs[2] caller ctx
     // ptrs[3] callee ctx
     return ctx;
@@ -104,7 +104,23 @@ bunki_t bunki_init_stack_ctx(void* stack_mem) {
 void bunki_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg) {
     uintptr_t ptr = get_stack_base(ctx);
     bunki_t ret   = bunki_native_finalize_ctx(ctx, func, arg, ptr);
-    ptr  = get_stack_start(ret);
-    ptr -= 0x8;
+    ptr  = get_stack_start(ret) - 0x08;
     memcpy((void*)ptr, &ret, sizeof(void*));
+}
+
+void* bunki_large_stack_get(bunki_t ctx) {
+    uintptr_t ptr = get_stack_start(ctx) - 0x18;
+    void* ret;
+    memcpy(&ret, (void*)ptr, sizeof(void*));
+    return ret;
+}
+
+void bunki_large_stack_set(bunki_t ctx, void* stack_start) {
+    uintptr_t ptr = get_stack_start(ctx) - 0x18;
+    memcpy((void*)ptr, &stack_start, sizeof(void*));
+}
+
+uintptr_t bunki_resume_large_stack(bunki_t ctx, void* stack_start) {
+    bunki_large_stack_set(ctx, stack_start);
+    return bunki_resume(ctx);
 }

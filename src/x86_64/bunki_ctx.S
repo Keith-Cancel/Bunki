@@ -204,10 +204,30 @@ bunki_ctx_data_set:
     mov [rax - 0x20], ARG1
     ret
 
-    .global bunki_swap_ctx
+    .global bunki_ctx_caller_stack
     .align 16
-bunki_swap_ctx:
-    save_ctx ARG3, 0x0
-    load_ctx ARG2, 0x0
-    mov rax, ARG1
+bunki_ctx_caller_stack:
+    call bunki_ctx_stack_start
+    mov  rax, [rax - 0x10]
+    and  rax, -16 # align stack
+    ret
+
+    .global bunki_ctx_large_stack
+    .align 16
+bunki_ctx_large_stack:
+    call bunki_ctx_stack_start
+    mov  rax, [rax - 0x18]
+    and  rax, -16 # align stack
+    ret
+
+    .global bunki_call_on_stack
+    .align 16
+bunki_call_on_stack:
+    and ARG3, -16 # align stack
+    mov  rax, rsp
+    mov  rsp, ARG3
+    sub  rsp, 8 # to ensure stack is aligned before call
+    push rax
+    call ARG2
+    pop  rsp
     ret

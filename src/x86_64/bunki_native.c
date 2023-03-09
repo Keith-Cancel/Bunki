@@ -54,7 +54,7 @@ extern uint32_t __bunki_patch3__;
             return size;
         #endif
     }
-
+    // Currently as written the object must only straddle two pages at most.
     static unsigned patch_obj_mprotect(void* ptr, uint8_t obj_size, int prot) {
         uintptr_t pg_sz   = get_page_size();
         uintptr_t shift   = 0;
@@ -106,6 +106,9 @@ bunki_t bunki_native_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* a
 #if !defined(BUNKI_STACK_CONST)
 unsigned bunki_patch_call_yield(uint32_t stack_size) {
     unsigned ret = 0;
+    // Probably could do with less calls since I know some these patch points
+    // are within a single page, but if I refactor any of the assembly at least
+    // I do not need to update this.
     ret |= patch_obj_mprotect(&__bunki_patch0__, sizeof(uint32_t), OBJ_RWE);
     ret |= patch_obj_mprotect(&__bunki_patch1__, sizeof(uint32_t), OBJ_RWE);
     ret |= patch_obj_mprotect(&__bunki_patch2__, sizeof(uint32_t), OBJ_RWE);
