@@ -18,3 +18,10 @@ instead of killing the process I could gracefully produce an error.
 
 The biggest down side I see is it gets slower the larger the context is. Also slower given the fact I would have to read the stack memory and then
 write to the save location. Where as what I have just write the non-volatile registers.
+
+I just realized the biggest problem with this idea. Pointers to data on the stack could be moved when the coroutine is later resumed.
+While relative addressing is certainly possible that would require compiler support so would be rather un-ergonomic or would have to use
+the heap. Unless I can think of some way to deal with this I think this idea is dead. Short of finding the start of a threads stack and copying
+it out, but that stack copy could be much much larger killing context switching performance.
+
+This idea seems workable if a programming language was designed around, but as a C library no go.
