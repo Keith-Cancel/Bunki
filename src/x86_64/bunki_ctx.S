@@ -24,7 +24,7 @@
     #define BUNKI_STACK_CONST 0x01
 #endif
 
-#if defined(_WIN64) && defined(BUNKI_NO_WIN64_XMM)
+#if defined(_WIN64) && !defined(BUNKI_NO_WIN64_XMM)
     #define WIN_SZ 168
 #elif defined(_WIN64)
     #define WIN_SZ 40
