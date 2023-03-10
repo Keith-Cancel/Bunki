@@ -121,6 +121,7 @@
     pop rbx
 .endm
 
+# bunki_resume function
     .text
     .global bunki_resume
     .global __bunki_patch0__
@@ -138,6 +139,7 @@ __bunki_patch0__:
     load_ctx ARG1, 0x7
     ret
 
+# bunki_yield function
     .global bunki_yield
     .global __bunki_patch1__
     .align 16
@@ -151,6 +153,7 @@ __bunki_patch1__:
     mov rax, ARG1
     ret
 
+# bunki_init_ctx function
     .global bunki_init_ctx
     .global __bunki_patch2__
     .align 16
@@ -179,6 +182,7 @@ bunki_set_rax:
     xor eax, eax
     jmp bunki_done
 
+# bunki_ctx_stack_start
     .global bunki_ctx_stack_start
     .global __bunki_patch3__
     .align 16
@@ -190,6 +194,7 @@ __bunki_patch3__:
     inc rax
     ret
 
+# bunki_ctx_data_get
     .global bunki_ctx_data_get
     .align 16
 bunki_ctx_data_get:
@@ -197,27 +202,12 @@ bunki_ctx_data_get:
     mov rax, [rax - 0x20]
     ret
 
+# bunki_ctx_data_set
     .global bunki_ctx_data_set
     .align 16
 bunki_ctx_data_set:
     call bunki_ctx_stack_start
     mov [rax - 0x20], ARG1
-    ret
-
-    .global bunki_ctx_caller_stack
-    .align 16
-bunki_ctx_caller_stack:
-    call bunki_ctx_stack_start
-    mov  rax, [rax - 0x10]
-    and  rax, -16 # align stack
-    ret
-
-    .global bunki_ctx_large_stack
-    .align 16
-bunki_ctx_large_stack:
-    call bunki_ctx_stack_start
-    mov  rax, [rax - 0x18]
-    and  rax, -16 # align stack
     ret
 
     .global bunki_call_on_stack
