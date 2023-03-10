@@ -136,19 +136,39 @@ bunki_resume:
 __bunki_patch0__:
     .long ((BUNKI_STACK_CONST) - 1)
     save_ctx ARG1, 0xf
+    # save the thread stack
     and rsp, -16
     mov [ARG1 - 0x17], rsp
     load_ctx ARG1, 0x7
     ret
 
+# bunki_ctx_resume function
+    .text
+    .global bunki_ctx_resume
+    .global __bunki_patch1__
+    .align  16
+bunki_ctx_resume:
+    .byte 0x48, 0xc7, 0xc0
+__bunki_patch1__:
+    .long ((BUNKI_STACK_CONST) - 1)
+    or       ARG1, rax
+    save_ctx ARG1, 0xf
+    # get the the thread stack from
+    # the callers ctx.
+    or       rax,  rsp
+    mov      rax,  [rax - 0x17]
+    mov      [ARG1 - 0x17], rax
+    load_ctx ARG1, 0x7
+    ret
+
 # bunki_yield function
     .global bunki_yield
-    .global __bunki_patch1__
+    .global __bunki_patch2__
     .align 16
 bunki_yield:
     mov rax, rsp
     .byte 0x48, 0x0d
-__bunki_patch1__:
+__bunki_patch2__:
     .long ((BUNKI_STACK_CONST) - 1)
     save_ctx rax, 0x7
     load_ctx rax, 0xf
@@ -157,14 +177,14 @@ __bunki_patch1__:
 
 # bunki_init_ctx function
     .global bunki_init_ctx
-    .global __bunki_patch2__
+    .global __bunki_patch3__
     .align 16
 bunki_init_ctx:
     mov  ARG1, r15
     call rbx
     mov  rbx, rsp
     .byte 0x48, 0x81, 0xcb
-__bunki_patch2__:
+__bunki_patch3__:
     .long ((BUNKI_STACK_CONST) - 1)
     lea  ARG1, [rip + bunki_set_rax]
     push ARG1
@@ -186,12 +206,12 @@ bunki_set_rax:
 
 # bunki_ctx_stack_start
     .global bunki_ctx_stack_start
-    .global __bunki_patch3__
+    .global __bunki_patch4__
     .align 16
 bunki_ctx_stack_start:
     mov rax, rsp
     .byte 0x48, 0x0d
-__bunki_patch3__:
+__bunki_patch4__:
     .long ((BUNKI_STACK_CONST) - 1)
     inc rax
     ret

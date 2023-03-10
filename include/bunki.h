@@ -21,9 +21,10 @@ void    bunki_large_stack_set(bunki_t ctx, void* stack_start);
 uintptr_t bunki_resume(bunki_t ctx);
 void      bunki_yield(uintptr_t ret);
 
+// Functions that can only be called with a coroutine ctx
+uintptr_t bunki_ctx_resume(bunki_t ctx);
 // Context local Storage functions
-void* bunki_ctx_data_get(void);
-void  bunki_ctx_data_set(void* data);
-void* bunki_ctx_caller_stack(void);
+void*     bunki_ctx_data_get(void);
+void      bunki_ctx_data_set(void* data);
 
 #endif
