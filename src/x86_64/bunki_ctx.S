@@ -136,6 +136,8 @@ bunki_resume:
 __bunki_patch0__:
     .long ((BUNKI_STACK_CONST) - 1)
     save_ctx ARG1, 0xf
+    and rsp, -16
+    mov [ARG1 - 0x17], rsp
     load_ctx ARG1, 0x7
     ret
 
