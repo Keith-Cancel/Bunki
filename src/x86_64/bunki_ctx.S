@@ -12,10 +12,12 @@
     #define ARG1 rdi
     #define ARG2 rsi
     #define ARG3 rdx
+    #define ARG4 rcx
 #elif defined(_WIN64)
     #define ARG1 rcx
     #define ARG2 rdx
     #define ARG3 r8
+    #define ARG4 r9
 #else
     #error Unknown x86_64 ABI. Sadly not ported to your system.
 #endif
@@ -137,7 +139,7 @@ __bunki_patch0__:
     .long ((BUNKI_STACK_CONST) - 1)
     save_ctx ARG1, 0xf
     # save the thread stack
-    and rsp, -16
+    and rsp, -16 # align the stack to 16
     mov [ARG1 - 0x17], rsp
     load_ctx ARG1, 0x7
     ret
@@ -232,12 +234,13 @@ bunki_ctx_data_set:
     mov [rax - 0x20], ARG1
     ret
 
-    .global bunki_call_on_stack
+# bunki_ctx_call
+    .global bunki_ctx_call
     .align 16
-bunki_call_on_stack:
-    and ARG3, -16 # align stack
-    mov  rax, rsp
-    mov  rsp, ARG3
+bunki_ctx_call:
+    call bunki_ctx_stack_start
+    mov  rax, [rax - 0x18]
+    xchg rax, rsp
     sub  rsp, 8 # to ensure stack is aligned before call
     push rax
     call ARG2
