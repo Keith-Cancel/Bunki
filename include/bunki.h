@@ -28,5 +28,7 @@ void*     bunki_ctx_data_get(void);
 void      bunki_ctx_data_set(void* data);
 // Call a function on the thread stack
 uintptr_t bunki_ctx_call(void* arg, uintptr_t (*func)(void*));
+uintptr_t bunki_ctx_call_arg2(void* arg0, void* arg1, uintptr_t (*func)(void*, void*));
+uintptr_t bunki_ctx_call_arg3(void* arg0, void* arg1, void* arg2, uintptr_t (*func)(void*, void*, void*));
 
 #endif
