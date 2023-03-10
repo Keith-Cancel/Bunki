@@ -246,3 +246,29 @@ bunki_ctx_call:
     call ARG2
     pop  rsp
     ret
+
+# bunki_ctx_call_arg2
+    .global bunki_ctx_call_arg2
+    .align 16
+bunki_ctx_call_arg2:
+    call bunki_ctx_stack_start
+    mov  rax, [rax - 0x18]
+    xchg rax, rsp
+    sub  rsp, 8 # to ensure stack is aligned before call
+    push rax
+    call ARG3
+    pop  rsp
+    ret
+
+# bunki_ctx_call_arg3
+    .global bunki_ctx_call_arg3
+    .align 16
+bunki_ctx_call_arg3:
+    call bunki_ctx_stack_start
+    mov  rax, [rax - 0x18]
+    xchg rax, rsp
+    sub  rsp, 8 # to ensure stack is aligned before call
+    push rax
+    call ARG4
+    pop  rsp
+    ret
