@@ -26,10 +26,14 @@
     #define BUNKI_STACK_CONST 0x01
 #endif
 
-#if defined(_WIN64) && !defined(BUNKI_NO_WIN64_XMM)
-    #define WIN_SZ 168
-#elif defined(_WIN64)
-    #define WIN_SZ 40
+#if !defined(BUNKI_NO_WIN64_XMM)
+    #define WIN_XMM_SZ 128
+#else
+    #define WIN_XMM_SZ 0
+#endif
+
+#if defined(_WIN64)
+    #define WIN_SZ (40 + WIN_XMM_SZ)
 #else
     #define WIN_SZ 0
 #endif
@@ -139,7 +143,6 @@ __bunki_patch0__:
     .long ((BUNKI_STACK_CONST) - 1)
     save_ctx ARG1, 0xf
     # save the thread stack
-    and rsp, -16 # align the stack to 16
     mov [ARG1 - 0x17], rsp
     load_ctx ARG1, 0x7
     ret
@@ -238,27 +241,15 @@ bunki_ctx_data_set:
     .global bunki_ctx_call
     .align 16
 bunki_ctx_call:
-    call bunki_ctx_stack_start
-    mov  rax, [rax - 0x18]
-    xchg rax, rsp
-    sub  rsp, 8 # to ensure stack is aligned before call
-    push rax
-    call ARG2
-    pop  rsp
-    ret
+    mov ARG4, ARG2
+    jmp bunki_ctx_call_arg3
 
 # bunki_ctx_call_arg2
     .global bunki_ctx_call_arg2
     .align 16
 bunki_ctx_call_arg2:
-    call bunki_ctx_stack_start
-    mov  rax, [rax - 0x18]
-    xchg rax, rsp
-    sub  rsp, 8 # to ensure stack is aligned before call
-    push rax
-    call ARG3
-    pop  rsp
-    ret
+    mov ARG4, ARG3
+    jmp bunki_ctx_call_arg3
 
 # bunki_ctx_call_arg3
     .global bunki_ctx_call_arg3
@@ -266,9 +257,42 @@ bunki_ctx_call_arg2:
 bunki_ctx_call_arg3:
     call bunki_ctx_stack_start
     mov  rax, [rax - 0x18]
+    #if defined(_WIN64)
+        mov  r10, rax # save thread stack before re-alignment
+    #endif
+    and  rax, -16 # align the thread stack pointer
     xchg rax, rsp
-    sub  rsp, 8 # to ensure stack is aligned before call
-    push rax
-    call ARG4
-    pop  rsp
+    #if defined(_WIN64)
+        # save old stack pointer
+        push rax
+        # save the old thread stack info
+        mov  rax, gs:0x30
+        push [rax + 0x1478]
+        push [rax + 0x0010]
+        push [rax + 0x0008]
+        # load the the tread stack's TEB info
+        mov r11, [r10 + (FCW_SAVE + WIN_XMM_SZ)]      # stack base
+        mov [rax + 0x0008], r11
+        mov r11, [r10 + (FCW_SAVE + WIN_XMM_SZ + 8)]  # stack limit
+        mov [rax + 0x0010], r11
+        mov r11, [r10 + (FCW_SAVE + WIN_XMM_SZ + 16)] # stack dealloc
+        mov [rax + 0x1478], r11
+        # Make room for shadow/home space
+        sub  rsp, 32
+    #else
+        # keep stack aligned
+        sub rsp, 8
+        # save old stack pointer
+        push rax
+    #endif
+    call ARG4 # Call the function
+    #if defined(_WIN64)
+        add  rsp, 32
+        # restore the TEB info for this context
+        mov ARG1, gs:0x30
+        pop [ARG1 + 0x0008]
+        pop [ARG1 + 0x0010]
+        pop [ARG1 + 0x1478]
+    #endif
+    pop rsp
     ret
