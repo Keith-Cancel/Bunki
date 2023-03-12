@@ -1,9 +1,10 @@
 #include "bunki.h"
 #include "bunki_ctx.h"
+#include "bunki_common.h"
+
 #include <string.h>
 #include <limits.h>
 
-#define ALIGN_MASK(val) (~((size_t)val - 1))
 #define MULT_OF_ALIGN(x, align) (((x) + ((align) - 1)) & (-(align)))
 
 #if defined(BUNKI_STACK_CONST)
@@ -11,29 +12,6 @@
 #else
     static uint32_t global_stack_size = 0;
 #endif
-
-static unsigned is_power2(uint32_t number) {
-    #if defined(__GNUC__)
-        #if UINT_MAX >= UINT32_MAX
-            #define BUNKI_USED_POP
-            return __builtin_popcount(number) == 1;
-        #elif ULONG_MAX >= UINT32_MAX
-            #define BUNKI_USED_POP
-            return __builtin_popcountl(number) == 1;
-        #endif
-    #endif
-    #if !defined(BUNKI_USED_POP) && defined(_MSC_VER)
-        #define BUNKI_USED_POP
-        return __popcnt(number) == 0;
-    #endif
-
-    #if !defined(BUNKI_USED_POP)
-        if(number == 0) {
-            return 0;
-        }
-        return (number & (number - 1)) == 0;
-    #endif
-}
 
 static uintptr_t get_stack_start(bunki_t ctx) {
     uintptr_t ret = (uintptr_t)ctx;
@@ -65,7 +43,7 @@ unsigned bunki_init(uint32_t stack_size) {
     #if defined(BUNKI_STACK_CONST)
         return 0;
     #else
-        if(!is_power2(stack_size) || stack_size <  bunki_stack_min_size()) {
+        if(!bunki_is_power2(stack_size) || stack_size <  bunki_stack_min_size()) {
             return 1;
         }
         global_stack_size = stack_size;
@@ -76,7 +54,7 @@ unsigned bunki_init(uint32_t stack_size) {
 void* bunki_stack_push(bunki_t* ctx, size_t allocation_length) {
     uintptr_t stk = (uintptr_t)(*ctx);
     stk -= allocation_length;
-    stk &= ALIGN_MASK(ARCH_STK_ALIGN);
+    stk &= BUNKI_ALIGN_MASK(ARCH_STK_ALIGN);
     *ctx = (bunki_t)stk;
     return (void*)stk;
 }
