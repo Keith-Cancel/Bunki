@@ -114,13 +114,3 @@ void* bunki_large_stack_get(bunki_t ctx) {
     memcpy(&ret, (void*)ptr, sizeof(void*));
     return ret;
 }
-
-void bunki_large_stack_set(bunki_t ctx, void* stack_start) {
-    uintptr_t ptr = get_stack_start(ctx) - 0x18;
-    memcpy((void*)ptr, &stack_start, sizeof(void*));
-}
-
-uintptr_t bunki_resume_large_stack(bunki_t ctx, void* stack_start) {
-    bunki_large_stack_set(ctx, stack_start);
-    return bunki_resume(ctx);
-}
