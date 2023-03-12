@@ -54,4 +54,7 @@ static inline unsigned bunki_is_power2(uint32_t number) {
 
 #define BUNKI_ALIGN_MASK(val) (~((size_t)val - 1))
 
+// Function prototypes
+unsigned bunki_patch_obj_mprotect_exec(void* ptr, uint8_t obj_size, unsigned write);
+
 #endif
