@@ -71,7 +71,8 @@ bunki_t bunki_init_stack_ctx(void* stack_mem) {
     uintptr_t stk = (uintptr_t)stack_mem;
     stk += global_stack_size;
     bunki_t ctx   = (bunki_t)stk;
-    void** ptrs   = bunki_stack_push(&ctx, 4 * sizeof(void*));
+    bunki_stack_push(&ctx, 4 * sizeof(void*));
+    //void** ptrs   = bunki_stack_push(&ctx, 4 * sizeof(void*));
     // ptrs[0] user data
     // ptrs[1] the thread stack pointer
     // ptrs[2] caller ctx
