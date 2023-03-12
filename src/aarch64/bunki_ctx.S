@@ -109,6 +109,18 @@ bunki_ctx_call_arg2:
     b   bunki_ctx_call_arg3
 
     .global bunki_ctx_call_arg3
+    .global __bunki_patch6_x6__
     .align 4
 bunki_ctx_call_arg3:
+    mov  x6, sp
+__bunki_patch6_x6__:
+    orr  x6, x6, (BUNKI_STACK_CONST - 1)
+    ldr	 x6, [x6, -0x17]
+    and  x6, x6, -16        // align stack
+    mov  x5, sp             // save stack pointer
+    mov  sp, x6             // switch stacks
+    stp  lr, x5, [sp, -16]! // save ret and stack pointer
+    blr  x3
+    ldp  lr, x5, [sp], 16
+    mov  sp, x5             // restore stack
     ret
