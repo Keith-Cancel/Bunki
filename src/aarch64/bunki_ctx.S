@@ -1,5 +1,5 @@
 #if !defined(BUNKI_STACK_CONST)
-    #define BUNKI_STACK_CONST 0x100
+    #define BUNKI_STACK_CONST 0x2
 #endif
 
 .macro save_ctx save_ptr, save_off
@@ -29,7 +29,6 @@
     .global __bunki_patch0_x0__
     .align  4
 bunki_resume:
-    orr      x0,  x0, x0
 __bunki_patch0_x0__:
     orr      x0,  x0, (BUNKI_STACK_CONST - 1)
     save_ctx x0, 0xf
