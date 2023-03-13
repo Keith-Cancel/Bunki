@@ -3,6 +3,12 @@
 #endif
 
 .macro save_ctx save_ptr, save_off
+    #if !defined(BUNKI_AARCH64_NO_VEC_FLOAT)
+        stp d9,  d8,  [sp, -16]!
+        stp d11, d10, [sp, -16]!
+        stp d13, d12, [sp, -16]!
+        stp d15, d14, [sp, -16]!
+    #endif
     stp x20, x19, [sp, -16]!
     stp x22, x21, [sp, -16]!
     stp x24, x23, [sp, -16]!
@@ -22,6 +28,12 @@
     ldp x24, x23, [sp], 16
     ldp x22, x21, [sp], 16
     ldp x20, x19, [sp], 16
+    #if !defined(BUNKI_AARCH64_NO_VEC_FLOAT)
+        ldp d15, d14, [sp], 16
+        ldp d13, d12, [sp], 16
+        ldp d11, d10, [sp], 16
+        ldp d9,  d8,  [sp], 16
+    #endif
 .endm
 
     .text
@@ -85,7 +97,11 @@ __bunki_patch5_x29__:
     orr  x29, x29, (BUNKI_STACK_CONST - 1)
     adrp x5,  bunki_set_ret
     add  x5,  x5, #:lo12:bunki_set_ret
-    sub  x4,  x29, 0x7f
+    #if defined(BUNKI_AARCH64_NO_VEC_FLOAT)
+        sub  x4, x29, 0x7f
+    #else
+        sub  x4, x29, 0xbf
+    #endif
     str	 x4, [x29, -0x7]
     stp  x5,  x29, [x4]
 bunki_done:

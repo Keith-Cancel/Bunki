@@ -20,6 +20,16 @@ struct stack_ctx_s {
     uint64_t x21;
     uint64_t x20;
     uint64_t x19;
+    #if !defined(BUNKI_AARCH64_NO_VEC_FLOAT)
+        uint64_t d15;
+        uint64_t d14;
+        uint64_t d13;
+        uint64_t d12;
+        uint64_t d11;
+        uint64_t d10;
+        uint64_t d9;
+        uint64_t d8;
+    #endif
 };
 
 #define ARCH_STK_ALIGN 0x10U
