@@ -228,13 +228,13 @@ This function **MUST** only be called inside a coroutine, and secondly while on 
 ```c
 uintptr_t bunki_ctx_call_arg2(void* arg0, void* arg1, uintptr_t (*func)(void*, void*));
 ```
-This function behave just like [bunki_ctx_call()](#bunki_ctx_call), but 2 arguments are passed to func when called instead.
+This function behaves just like [bunki_ctx_call()](#bunki_ctx_call), but 2 arguments are passed to func when called instead.
 
 ## bunki_ctx_call_arg3
 ```c
 uintptr_t bunki_ctx_call_arg3(void* arg0, void* arg1, void* arg2, uintptr_t (*func)(void*, void*, void*));
 ```
-This function behave just like [bunki_ctx_call()](#bunki_ctx_call), but 3 arguments are passed to func when called instead.
+This function behaves just like [bunki_ctx_call()](#bunki_ctx_call), but 3 arguments are passed to func when called instead.
 
 # Notes
 
