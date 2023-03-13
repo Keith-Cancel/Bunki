@@ -76,7 +76,7 @@ unsigned bunki_patch_call_yield(uint32_t stack_size) {
     uint32_t x0  = gen_orr(0,  0,  stack_size);
     uint32_t x6  = gen_orr(6,  6,  stack_size);
     uint32_t x29 = gen_orr(29, 29, stack_size);
-    extern uint32_t __bunki_patch0_x0__;
+    memcpy(&__bunki_patch0_x0__,  &x0,  sizeof(uint32_t));
     memcpy(&__bunki_patch1_x6__,  &x6,  sizeof(uint32_t));
     memcpy(&__bunki_patch2_x0__,  &x0,  sizeof(uint32_t));
     memcpy(&__bunki_patch3_x6__,  &x6,  sizeof(uint32_t));
@@ -100,6 +100,8 @@ done:
     highest &= -(uintptr_t)4096;
     highest += 4096;
     // important since ARM64 has an icache
+    // mprotect does flush caches on linux for quite sometime
+    // but that is not a given for other *nix systems
     __builtin___clear_cache((char*)lowest, (char*)highest);
     return ret;
 }
