@@ -87,9 +87,8 @@ void bunki_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg) {
     memcpy((void*)ptr, &ret, sizeof(void*));
 }
 
-void* bunki_large_stack_get(bunki_t ctx) {
-    uintptr_t ptr = get_stack_start(ctx) - 0x18;
-    void* ret;
-    memcpy(&ret, (void*)ptr, sizeof(void*));
-    return ret;
+bunki_t bunki_init_finalize_ctx(void* stack, uintptr_t (*func)(void*), void* arg) {
+    bunki_t ctx = bunki_init_stack_ctx(stack);
+    bunki_finalize_ctx(ctx, func, arg);
+    return ctx;
 }
