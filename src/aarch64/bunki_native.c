@@ -5,6 +5,23 @@
 #include <string.h>
 
 void bunki_init_ctx(void);
+extern uint32_t __bunki_patch0_x0__;
+extern uint32_t __bunki_patch1_x6__;
+extern uint32_t __bunki_patch2_x0__;
+extern uint32_t __bunki_patch3_x6__;
+extern uint32_t __bunki_patch4_x0__;
+extern uint32_t __bunki_patch5_x29__;
+extern uint32_t __bunki_patch6_x6__;
+
+static uint32_t* patch_ptrs[7] = {
+    &__bunki_patch0_x0__,
+    &__bunki_patch1_x6__,
+    &__bunki_patch2_x0__,
+    &__bunki_patch3_x6__,
+    &__bunki_patch4_x0__,
+    &__bunki_patch5_x29__,
+    &__bunki_patch6_x6__
+};
 
 // stack_size must be greater than 1 and a power of 2
 static uint32_t gen_orr(uint32_t dest, uint32_t src, uint32_t stack_size) {
@@ -42,3 +59,48 @@ void bunki_ctx_data_set(void* data) {
     uintptr_t ptr = bunki_ctx_stack_start() - 0x20;
     *((void**)ptr) = data;
 }
+
+
+#if !defined(BUNKI_STACK_CONST) || 1
+unsigned bunki_patch_call_yield(uint32_t stack_size) {
+    // Probably could do with less calls since I know some these patch points
+    // are within a single page, but if I refactor any of the assembly at least
+    // I do not need to update this.
+    unsigned ret      = 0;
+    for(unsigned i = 0; i < 7; i++) {
+        ret |= bunki_patch_obj_mprotect_exec(patch_ptrs[i], sizeof(uint32_t), 1);
+    }
+    if(ret) {
+        goto done;
+    }
+    uint32_t x0  = gen_orr(0,  0,  stack_size);
+    uint32_t x6  = gen_orr(6,  6,  stack_size);
+    uint32_t x29 = gen_orr(29, 29, stack_size);
+    extern uint32_t __bunki_patch0_x0__;
+    memcpy(&__bunki_patch1_x6__,  &x6,  sizeof(uint32_t));
+    memcpy(&__bunki_patch2_x0__,  &x0,  sizeof(uint32_t));
+    memcpy(&__bunki_patch3_x6__,  &x6,  sizeof(uint32_t));
+    memcpy(&__bunki_patch4_x0__,  &x0,  sizeof(uint32_t));
+    memcpy(&__bunki_patch5_x29__, &x29, sizeof(uint32_t));
+    memcpy(&__bunki_patch6_x6__,  &x6,  sizeof(uint32_t));
+done:
+    uintptr_t lowest  = UINTPTR_MAX;
+    uintptr_t highest = 0;
+    for(unsigned i = 0; i < 7; i++) {
+        uintptr_t ptr = (uintptr_t)(patch_ptrs[i]);
+        if(ptr < lowest) {
+            lowest = ptr;
+        }
+        if(ptr > highest) {
+            highest = ptr;
+        }
+        ret |= bunki_patch_obj_mprotect_exec(patch_ptrs[i], sizeof(uint32_t), 0);
+    }
+    lowest  &= -(uintptr_t)4096;
+    highest &= -(uintptr_t)4096;
+    highest += 4096;
+    // important since ARM64 has an icache
+    __builtin___clear_cache((char*)lowest, (char*)highest);
+    return ret;
+}
+#endif
