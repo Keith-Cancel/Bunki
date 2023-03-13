@@ -15,7 +15,7 @@
 
 static uintptr_t get_stack_start(bunki_t ctx) {
     uintptr_t ret = (uintptr_t)ctx;
-    ret |= global_stack_size - 1;
+    ret |= (uintptr_t)(global_stack_size - 1);
     ret += 1;
     return ret;
 }
@@ -27,7 +27,7 @@ static uintptr_t get_stack_base(bunki_t ctx) {
 }
 
 uint32_t bunki_stack_min_size(void) {
-    uint32_t size = 4 * sizeof(void*) + sizeof(struct stack_ctx_s);
+    uint32_t size = 5 * sizeof(void*) + sizeof(struct stack_ctx_s);
     // round up to nearest power of 2
     size--;
     size |= size >> 1;
@@ -43,7 +43,7 @@ unsigned bunki_init(uint32_t stack_size) {
     #if defined(BUNKI_STACK_CONST)
         return 0;
     #else
-        if(!bunki_is_power2(stack_size) || stack_size <  bunki_stack_min_size()) {
+        if(!bunki_is_power2(stack_size) || stack_size < bunki_stack_min_size()) {
             return 1;
         }
         global_stack_size = stack_size;
