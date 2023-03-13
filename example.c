@@ -35,7 +35,7 @@ int main() {
         fprintf(stderr, "Failed to allocate memory!\n");
         return 1;
     }
-    bunki_t ctx = bunki_init_finalize_ctx(stack_mem, my_coroutine, (void*)0xbeef);
+    bunki_t ctx = bunki_init_prepare_ctx(stack_mem, my_coroutine, (void*)0xbeef);
     printf("Returned: %u\n", bunki_resume(ctx));
     printf("Returned: %u\n", bunki_resume(ctx));
     free(stack_mem);

@@ -80,15 +80,15 @@ bunki_t bunki_init_stack_ctx(void* stack_mem) {
     return ctx;
 }
 
-void bunki_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg) {
+void bunki_prepare_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg) {
     uintptr_t ptr = get_stack_base(ctx);
     bunki_t ret   = bunki_native_finalize_ctx(ctx, func, arg, ptr);
     ptr  = get_stack_start(ret) - 0x08;
     memcpy((void*)ptr, &ret, sizeof(void*));
 }
 
-bunki_t bunki_init_finalize_ctx(void* stack, uintptr_t (*func)(void*), void* arg) {
+bunki_t bunki_init_prepare_ctx(void* stack, uintptr_t (*func)(void*), void* arg) {
     bunki_t ctx = bunki_init_stack_ctx(stack);
-    bunki_finalize_ctx(ctx, func, arg);
+    bunki_prepare_ctx(ctx, func, arg);
     return ctx;
 }
