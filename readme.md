@@ -129,7 +129,7 @@ This function returns the smallest power of 2 stack size in bytes that can be us
 bunki_t bunki_init_stack_ctx(void* stack_mem);
 ```
 
-Creates a bunki_t context from the given memory. The size of stack_mem parameter **MUST** equal to the size provided to [bunki_init()](#bunki_init) further the alignment of this memory **MUST** be aligned by that size amount. For example if the size of the stacks are 256 bytes `stack_mem` must be on a 256 byte alignment.
+Creates a bunki_t context from the given memory. The size of stack_mem parameter **MUST** be equal to the size provided to [bunki_init()](#bunki_init) further the alignment of this memory **MUST** be aligned by that size amount. For example if the size of the stacks are 256 bytes `stack_mem` must be on a 256 byte alignment.
 
 
 ## bunki_prepare_ctx
@@ -218,9 +218,9 @@ This function and [bunki_ctx_data_get()](#bunki_ctx_data_get) are the building b
 ```c
 uintptr_t bunki_ctx_call(void* arg, uintptr_t (*func)(void*));
 ```
-When using stackful coroutines ideally you want small stacks. The drawback of that is you can't call any functions generate deep call stacks. This function lets you get around that drawback by calling the function pointer provided to the second argument on the threads stack instead.
+When using stackful coroutines ideally you want small stacks. The drawback of that is you can't call any functions that generate deep call stacks. This function lets you get around that drawback by calling the function pointer provided to the second argument on the threads stack instead.
 
-The first parameter `arg` is passed to the second parameter `func` when called. The return value is the value returned from function pointer when called.
+The first parameter `arg` is passed to the parameter `func` when called. The return value is the value returned from function pointer when called.
 
 This function **MUST** only be called inside a coroutine, and secondly while on the the thread's stack [bunki_yield](#bunki_yield) and any function prefixed with `bunki_ctx` **MUST** not be called.
 
@@ -228,17 +228,17 @@ This function **MUST** only be called inside a coroutine, and secondly while on 
 ```c
 uintptr_t bunki_ctx_call_arg2(void* arg0, void* arg1, uintptr_t (*func)(void*, void*));
 ```
-This function behaves just like [bunki_ctx_call()](#bunki_ctx_call), but 2 arguments are passed to func when called instead.
+This function behaves just like [bunki_ctx_call()](#bunki_ctx_call), but 2 arguments are passed to `func` when called instead.
 
 ## bunki_ctx_call_arg3
 ```c
 uintptr_t bunki_ctx_call_arg3(void* arg0, void* arg1, void* arg2, uintptr_t (*func)(void*, void*, void*));
 ```
-This function behaves just like [bunki_ctx_call()](#bunki_ctx_call), but 3 arguments are passed to func when called instead.
+This function behaves just like [bunki_ctx_call()](#bunki_ctx_call), but 3 arguments are passed to `func` when called instead.
 
 # Notes
 
-Unlike most other coroutine libraries you are allowed to return from a coroutine in bunk with the `return` keyword. You can use this create a one-time/one-shot function. For example:
+Unlike most other coroutine libraries you are allowed to return from a coroutine in Bunki with the `return` keyword. You can use this create a one-time/one-shot function. For example:
 
 ```c
 #include "bunki.h"
