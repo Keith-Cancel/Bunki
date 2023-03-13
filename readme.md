@@ -3,7 +3,7 @@ A simple to use C stackful coroutine library.
 
 The name is Japanese word bunki (分岐) which means to branch off. I consider the name quite fitting for a coroutine library just google image (分岐) and you will see what I mean.
 
-Currently supports the Sys-V call convention for x86_64 and the Win64 x64_86 calling convention, and aarch64.
+Currently supports the Sys-V calling convention for x86_64 and the Win64 x64_86 calling convention, and aarch64.
 
 Issues and PRs are welcome 😃
 
