@@ -24,6 +24,7 @@ Issues and PRs are welcome 😃
       * [bunki_stack_push_data](#bunki_stack_push_data)
       * [bunki_ctx_data_get](#bunki_ctx_data_get)
       * [bunki_ctx_data_set](#bunki_ctx_data_set)
+      * [bunki_ctx_call](#bunki_ctx_call)
    * [Notes](#notes)
    * [TODO](#todo)
    * [Copyright and License](#copyright-and-license)
