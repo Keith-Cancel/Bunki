@@ -67,6 +67,18 @@ void* bunki_stack_push_data(bunki_t* ctx, size_t data_length, void* data) {
     return stk;
 }
 
+void* bunki_data_get(bunki_t ctx) {
+    uintptr_t ptr = get_stack_start(ctx) - 0x20;
+    void* ret;
+    memcpy(&ret, (void*)ptr, sizeof(void*));
+    return ret;
+}
+
+void bunki_data_set(bunki_t ctx, void* data) {
+    uintptr_t ptr = get_stack_start(ctx) - 0x20;
+    memcpy((void*)ptr, &data, sizeof(void*));
+}
+
 bunki_t bunki_init_stack_ctx(void* stack_mem) {
     uintptr_t stk = (uintptr_t)stack_mem;
     stk += global_stack_size;

@@ -12,6 +12,9 @@ uint32_t bunki_stack_min_size(void);
 void*   bunki_stack_push(bunki_t* ctx, size_t allocation_length);
 void*   bunki_stack_push_data(bunki_t* ctx, size_t data_length, void* data);
 
+void*   bunki_data_get(bunki_t ctx);
+void    bunki_data_set(bunki_t ctx, void* data);
+
 bunki_t bunki_init_stack_ctx(void* stack_mem);
 void    bunki_prepare_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg);
 bunki_t bunki_init_prepare_ctx(void* stack_mem, uintptr_t (*func)(void*), void* arg);

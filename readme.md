@@ -22,6 +22,8 @@ Issues and PRs are welcome 😃
       * [bunki_yield](#bunki_yield)
       * [bunki_stack_push](#bunki_stack_push)
       * [bunki_stack_push_data](#bunki_stack_push_data)
+      * [bunki_data_get](#bunki_data_get)
+      * [bunki_data_set](#bunki_data_set)
       * [bunki_ctx_data_get](#bunki_ctx_data_get)
       * [bunki_ctx_data_set](#bunki_ctx_data_set)
       * [bunki_ctx_call](#bunki_ctx_call)
@@ -200,6 +202,21 @@ void* bunki_stack_push_data(bunki_t* ctx, size_t data_length, void* data);
 ```
 
 This function behaves almost exactly like [bunki_stack_push()](#bunki_stack_push), but in addition it copies the data from the 3rd parameter to the memory reserved on the coroutines stack.
+
+## bunki_data_get
+```c
+void* bunki_data_get(bunki_t ctx);
+```
+
+This function does the same thing as [bunki_ctx_data_get()](#bunki_ctx_data_get), but allows you to get the value of co-routine local variable outside of the coroutine. This Can also be able helpful if the caller decides it is done with a coroutine. That's because if it's a pointer to allocated memory the caller can then free that memory.
+
+## bunki_data_set
+```c
+void  bunki_data_set(void* data);
+```
+
+This function does the same thing as [bunki_ctx_data_set()](#bunki_ctx_data_set), but allows you to set the value of co-routine local variable outside of the coroutine.
+
 
 ## bunki_ctx_data_get
 ```c
