@@ -238,7 +238,7 @@ uintptr_t bunki_ctx_call(void* arg, uintptr_t (*func)(void*));
 ```
 When using stackful coroutines ideally you want small stacks. The drawback of that is you can't call any functions that generate deep call stacks. This function lets you get around that drawback by calling the function pointer provided to the second argument on the threads stack instead.
 
-The first parameter `arg` is passed to the parameter `func` when called. The return value is the value returned from function pointer when called.
+The first parameter `arg` is passed to the parameter `func` when called. The return value is the value returned from the function pointer when called.
 
 This function **MUST** only be called inside a coroutine, and secondly while on the the thread's stack [bunki_yield](#bunki_yield) and any function prefixed with `bunki_ctx` **MUST** not be called.
 
