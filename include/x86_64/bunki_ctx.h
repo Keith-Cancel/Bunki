@@ -9,14 +9,11 @@
 
 struct stack_ctx_s {
     #if !defined(BUNKI_SHARE_FCW_MXCSR)
-        union {
-            struct {
-                uint32_t mxcsr;
-                uint16_t fcw;
-                uint16_t pad;
-            };
-            uint64_t both_csrs;
-        };
+        struct fcw_mxcsr_s {
+            uint32_t mxcsr;
+            uint16_t fcw;
+            uint16_t pad;
+        } both_csrs;
     #endif
     #ifdef _WIN64
         uint64_t fiber_data;
