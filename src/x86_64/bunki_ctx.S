@@ -33,7 +33,7 @@
 #endif
 
 #if defined(_WIN64)
-    #define WIN_SZ (40 + WIN_XMM_SZ)
+    #define WIN_SZ (48 + WIN_XMM_SZ)
 #else
     #define WIN_SZ 0
 #endif
@@ -76,6 +76,8 @@
             movaps [rsp + 0x60], xmm9
             movaps [rsp + 0x70], xmm8
         #endif
+        # save fiber data
+        push [rdi + 0x00020] # save the thread
     #endif
     #if !defined(BUNKI_SHARE_FCW_MXCSR)
         sub      rsp, 8
@@ -95,6 +97,9 @@
         add     rsp, 8
     #endif
     #if defined(_WIN64)
+        mov rdi, gs:0x30
+        # restore fiber data
+        pop [rdi + 0x0020]
         #if !defined(BUNKI_NO_WIN64_XMM)
             movaps xmm15, [rsp + 0x00]
             movaps xmm14, [rsp + 0x10]
@@ -109,7 +114,6 @@
             movaps xmm7,  [rsp + 0x70]
             movaps xmm6,  [rsp + 0x60]
         #endif
-        mov rdi, gs:0x30
         # needs to be set for things like __chkstk to work properly
         pop [rdi + 0x0008]
         pop [rdi + 0x0010]

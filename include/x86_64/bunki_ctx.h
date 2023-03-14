@@ -19,6 +19,7 @@ struct stack_ctx_s {
         };
     #endif
     #ifdef _WIN64
+        uint64_t fiber_data;
         #if !defined(BUNKI_NO_WIN64_XMM)
         uint8_t xmm8_15[128];
         #endif
