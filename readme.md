@@ -186,7 +186,7 @@ This function behaves just like [bunki_resume()](#bunki_resume), but **MUST** on
 ```c
 void bunki_yield(uintptr_t ret);
 ```
-Yield the execution of the coroutine and resumes the caller. The caller gets the value passed passed to the argument `ret` returned to them. This function **MUST** not be called outside of a coroutine.
+Yield the execution of the coroutine and resumes the caller. The caller gets the value passed to the argument `ret` returned to them. This function **MUST** not be called outside of a coroutine.
 
 ## bunki_stack_push
 ```c
