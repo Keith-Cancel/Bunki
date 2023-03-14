@@ -208,7 +208,7 @@ This function behaves almost exactly like [bunki_stack_push()](#bunki_stack_push
 void* bunki_data_get(bunki_t ctx);
 ```
 
-This function does the same thing as [bunki_ctx_data_get()](#bunki_ctx_data_get), but allows you to get the value of the co-routine local variable outside of the coroutine. This Can also be able helpful if the caller decides it is done with a coroutine. That's because if it's a pointer to allocated memory the caller can then free that memory.
+This function does the same thing as [bunki_ctx_data_get()](#bunki_ctx_data_get), but allows you to get the value of the co-routine local variable outside of the coroutine. This can be helpful if the caller decides it is done with a coroutine. That's because if it's a pointer to allocated memory the caller can then free that memory.
 
 ## bunki_data_set
 ```c
