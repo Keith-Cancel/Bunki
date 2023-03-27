@@ -14,7 +14,7 @@ Issues and PRs are welcome 😃
    * [API](#api)
       * [bunki_init](#bunki_init)
       * [bunki_stack_min_size](#bunki_stack_min_size)
-      * [bunki_init_stack_ctx](bunki_init_stack_ctx)
+      * [bunki_init_stack_ctx](#bunki_init_stack_ctx)
       * [bunki_prepare_ctx](#bunki_prepare_ctx)
       * [bunki_init_prepare_ctx](#bunki_init_prepare_ctx)
       * [bunki_resume](#bunki_resume)
