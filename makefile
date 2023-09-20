@@ -3,7 +3,7 @@ define NEW_LINE
 
 endef
 CC       := gcc
-CFLAGS   := -O2 -falign-functions -fsplit-wide-types-early -march=native
+CFLAGS   := -O2 -falign-functions -march=native
 LDFLAGS  :=
 LDLIBS   :=
 LIBS     :=
@@ -30,6 +30,12 @@ ifneq (,$(findstring aarch64, $(shell $(CC) -dumpmachine)))
 	INCLUDES += -I./include/aarch64
 	SRC_C    += $(wildcard $(SRC_DIR)/aarch64/*.c)
 	SRC_ASM  += $(wildcard $(SRC_DIR)/aarch64/*.S)
+endif
+
+ifneq (,$(findstring arm, $(shell $(CC) -dumpmachine)))
+	INCLUDES += -I./include/arm
+	SRC_C    += $(wildcard $(SRC_DIR)/arm/*.c)
+	SRC_ASM  += $(wildcard $(SRC_DIR)/arm/*.S)
 endif
 
 $(info INCLUDES = $(INCLUDES))

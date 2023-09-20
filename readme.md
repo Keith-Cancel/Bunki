@@ -3,7 +3,7 @@ A simple to use C stackful coroutine library.
 
 The name is the Japanese word bunki (分岐) which means to branch off. I consider the name quite fitting for a coroutine library just [google image search (分岐)](https://www.google.com/search?q=%E5%88%86%E5%B2%90&tbm=isch) and you will see what I mean.
 
-Currently supports the Sys-V calling convention for x86_64 and the Win64 x64_86 calling convention, and aarch64.
+Currently supports the Sys-V calling convention for x86_64 and the Win64 x64_86 calling convention, aarch64, and arm.
 
 Issues and PRs are welcome 😃
 
@@ -212,7 +212,7 @@ This function does the same thing as [bunki_ctx_data_get()](#bunki_ctx_data_get)
 
 ## bunki_data_set
 ```c
-void  bunki_data_set(void* data);
+void  bunki_data_set(bunki_t ctx, void* data);
 ```
 
 This function does the same thing as [bunki_ctx_data_set()](#bunki_ctx_data_set), but allows you to set the value of the co-routine local variable outside of the coroutine.
