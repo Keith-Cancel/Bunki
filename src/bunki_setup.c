@@ -8,9 +8,9 @@
 #define MULT_OF_ALIGN(x, align) (((x) + ((align) - 1)) & (-(align)))
 
 #if defined(BUNKI_STACK_CONST)
-    static const uint32_t global_stack_size = (BUNKI_STACK_CONST);
+static const uint32_t global_stack_size = (BUNKI_STACK_CONST);
 #else
-    static uint32_t global_stack_size = 0;
+static uint32_t global_stack_size = 0;
 #endif
 
 static uintptr_t get_stack_start(bunki_t ctx) {
@@ -40,15 +40,16 @@ uint32_t bunki_stack_min_size(void) {
 }
 
 unsigned bunki_init(uint32_t stack_size) {
-    #if defined(BUNKI_STACK_CONST)
-        return 0;
-    #else
-        if(!bunki_is_power2(stack_size) || stack_size < bunki_stack_min_size()) {
-            return 1;
-        }
-        global_stack_size = stack_size;
-        return (bunki_patch_call_yield(stack_size) << 1);
-    #endif
+#if defined(BUNKI_STACK_CONST)
+    (void) stack_size;
+    return 0;
+#else
+    if(!bunki_is_power2(stack_size) || stack_size < bunki_stack_min_size()) {
+        return 1;
+    }
+    global_stack_size = stack_size;
+    return (bunki_patch_call_yield(stack_size) << 1);
+#endif
 }
 
 void* bunki_stack_push(bunki_t* ctx, size_t allocation_length) {
@@ -68,14 +69,14 @@ void* bunki_stack_push_data(bunki_t* ctx, size_t data_length, void* data) {
 }
 
 void* bunki_data_get(bunki_t ctx) {
-    uintptr_t ptr = get_stack_start(ctx) - 0x20;
+    uintptr_t ptr = get_stack_start(ctx) - 4 * sizeof(void*);
     void* ret;
     memcpy(&ret, (void*)ptr, sizeof(void*));
     return ret;
 }
 
 void bunki_data_set(bunki_t ctx, void* data) {
-    uintptr_t ptr = get_stack_start(ctx) - 0x20;
+    uintptr_t ptr = get_stack_start(ctx) - 4 * sizeof(void*);
     memcpy((void*)ptr, &data, sizeof(void*));
 }
 
@@ -95,7 +96,7 @@ bunki_t bunki_init_stack_ctx(void* stack_mem) {
 void bunki_prepare_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg) {
     uintptr_t ptr = get_stack_base(ctx);
     bunki_t ret   = bunki_native_finalize_ctx(ctx, func, arg, ptr);
-    ptr  = get_stack_start(ret) - 0x08;
+    ptr  = get_stack_start(ret) - sizeof(void*);
     memcpy((void*)ptr, &ret, sizeof(void*));
 }
 
