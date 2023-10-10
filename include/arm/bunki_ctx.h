@@ -1,5 +1,5 @@
-#ifndef BUNKI_AARCH64_CTX_FILE_H
-#define BUNKI_AARCH64_CTX_FILE_H
+#ifndef BUNKI_ARM_CTX_FILE_H
+#define BUNKI_ARM_CTX_FILE_H
 
 #if !defined(__arm__)
     #error "This is not an ARM architecture"
