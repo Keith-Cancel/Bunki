@@ -38,7 +38,7 @@ __bunki_patch2_r0_r0__:
 	str	 r3, [r0, #-0xb]
 	save_ctx r0, 0x7
 	load_ctx r0, 0x3
-        mov      pc, lr
+    mov      pc, lr
 
 .global bunki_yield
 .global __bunki_patch3_r3_sp__
@@ -46,9 +46,9 @@ __bunki_patch2_r0_r0__:
 bunki_yield:
 __bunki_patch3_r3_sp__:
 	orr      r3, sp, #(BUNKI_STACK_CONST - 1)
-        save_ctx r3, 0x3
-        load_ctx r3, 0x7
-        mov      pc, lr
+    save_ctx r3, 0x3
+    load_ctx r3, 0x7
+    mov      pc, lr
 
 .global bunki_ctx_stack_start
 .global __bunki_patch4_r0_sp__
@@ -57,7 +57,7 @@ bunki_ctx_stack_start:
 __bunki_patch4_r0_sp__:
 	orr      r0, sp, #(BUNKI_STACK_CONST - 1)
 	add      r0, r0, #1
-        mov      pc, lr
+    mov      pc, lr
 
 .global bunki_init_ctx
 .global __bunki_patch5_r11_sp__
@@ -70,7 +70,7 @@ __bunki_patch5_r11_sp__:
 	ldr      r5, =bunki_set_ret
 	sub      r4, sp, #0x24   
 	str	 r4, [r11, #-0x3]
-        stm      r4, { r5, r11 }
+    stm      r4, { r5, r11 }
 bunki_done:
 	load_ctx r11, 0x7
         mov pc, lr
@@ -101,9 +101,9 @@ __bunki_patch6_r4_sp__:
 	and      r4, r4, #-8
 	mov      r5, sp
 	mov      sp, r4
-        push     { r5, lr }
+    push     { r5, lr }
 	blx      r3
-        pop      { r5, lr }
+    pop      { r5, lr }
 	mov      sp, r5
-        pop      { r4, r5 }
-        mov      pc, lr
+    pop      { r4, r5 }
+    mov      pc, lr
