@@ -52,6 +52,10 @@ unsigned bunki_init(uint32_t stack_size) {
 #endif
 }
 
+void* bunki_stack_ptr(bunki_t ctx) {
+    return (void*)get_stack_base(ctx);
+}
+
 void* bunki_stack_push(bunki_t* ctx, size_t allocation_length) {
     uintptr_t stk = (uintptr_t)(*ctx);
     stk -= allocation_length;

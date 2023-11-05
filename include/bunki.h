@@ -9,6 +9,7 @@ typedef struct stack_ctx_s* bunki_t;
 unsigned bunki_init(uint32_t stack_size);
 uint32_t bunki_stack_min_size(void);
 
+void*   bunki_stack_ptr(bunki_t ctx);
 void*   bunki_stack_push(bunki_t* ctx, size_t allocation_length);
 void*   bunki_stack_push_data(bunki_t* ctx, size_t data_length, void* data);
 
