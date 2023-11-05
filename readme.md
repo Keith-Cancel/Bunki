@@ -193,7 +193,7 @@ Yield the execution of the coroutine and resumes the caller. The caller gets the
 ```c
 void* bunki_stack_ptr(bunki_t ctx);
 ```
-`bunki_stack_ptr()` lets one get the pointer back that was provided to `bunki_init_stack_ctx()` or `bunki_init_prepare_ctx()`.  The function allows one to just the store the context and retrieve the pointer later for instance to free.
+`bunki_stack_ptr()` lets one get the pointer back that was provided to [bunki_init_stack_ctx()](#bunki_init_stack_ctx) or [bunki_prepare_ctx()](#bunki_prepare_ctx).  The function allows one to just the store the context and retrieve the pointer later for instance to free.
 
 
 ## bunki_stack_push
