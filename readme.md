@@ -20,6 +20,7 @@ Issues and PRs are welcome 😃
       * [bunki_resume](#bunki_resume)
       * [bunki_ctx_resume](#bunki_ctx_resume)
       * [bunki_yield](#bunki_yield)
+      * [bunki_stack_ptr](#bunki_stack_ptr)
       * [bunki_stack_push](#bunki_stack_push)
       * [bunki_stack_push_data](#bunki_stack_push_data)
       * [bunki_data_get](#bunki_data_get)
@@ -187,6 +188,13 @@ This function behaves just like [bunki_resume()](#bunki_resume), but **MUST** on
 void bunki_yield(uintptr_t ret);
 ```
 Yield the execution of the coroutine and resumes the caller. The caller gets the value passed to the argument `ret` returned to them. This function **MUST** not be called outside of a coroutine.
+
+## bunki_stack_ptr
+```c
+void* bunki_stack_ptr(bunki_t ctx);
+```
+`bunki_stack_ptr()` lets one get the pointer back that was provided to `bunki_init_stack_ctx()` or `bunki_init_prepare_ctx()`.  The function allows one to just the store the context and retrieve the pointer later for instance to free.
+
 
 ## bunki_stack_push
 ```c
