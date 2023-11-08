@@ -20,6 +20,7 @@ Issues and PRs are welcome 😃
       * [bunki_resume](#bunki_resume)
       * [bunki_ctx_resume](#bunki_ctx_resume)
       * [bunki_yield](#bunki_yield)
+      * [bunki_stack_alignment](#bunki_stack_alignment)
       * [bunki_stack_ptr](#bunki_stack_ptr)
       * [bunki_stack_push](#bunki_stack_push)
       * [bunki_stack_push_data](#bunki_stack_push_data)
@@ -188,6 +189,12 @@ This function behaves just like [bunki_resume()](#bunki_resume), but **MUST** on
 void bunki_yield(uintptr_t ret);
 ```
 Yield the execution of the coroutine and resumes the caller. The caller gets the value passed to the argument `ret` returned to them. This function **MUST** not be called outside of a coroutine.
+
+## bunki_stack_alignment
+```c
+uint32_t bunki_stack_alignment(void);
+```
+`bunki_stack_alignment()` returns the current alignment all stacks must have. This will be same value you passed to [bunki_init()](#bunki_init) or set via the `BUNKI_STACK_CONST` define.
 
 ## bunki_stack_ptr
 ```c
