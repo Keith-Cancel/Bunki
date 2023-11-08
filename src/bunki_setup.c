@@ -52,6 +52,10 @@ unsigned bunki_init(uint32_t stack_size) {
 #endif
 }
 
+uint32_t bunki_stack_alignment(void) {
+    return global_stack_size;
+}
+
 void* bunki_stack_ptr(bunki_t ctx) {
     return (void*)get_stack_base(ctx);
 }
