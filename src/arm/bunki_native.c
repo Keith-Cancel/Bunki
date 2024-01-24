@@ -39,7 +39,7 @@ static uint32_t gen_orr(uint32_t dest, uint32_t src, uint32_t stack_size) {
 //
 
 bunki_t bunki_native_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg, uintptr_t stack_end) {
-    (void) stack_end;
+    (void)stack_end; // Suppress unused warning
     uintptr_t stk = (uintptr_t)ctx;
     // If stack alignment does not match use a little space to fix that.
     stk &= BUNKI_ALIGN_MASK(ARCH_STK_ALIGN);
@@ -87,7 +87,7 @@ unsigned bunki_patch_call_yield(uint32_t stack_size) {
     memcpy(&__bunki_patch4_r0_sp__,  &r0_sp,  sizeof(uint32_t));
     memcpy(&__bunki_patch5_r11_sp__,  &r11_sp,  sizeof(uint32_t));
     memcpy(&__bunki_patch6_r4_sp__,  &r4_sp,  sizeof(uint32_t));
-    
+
 done: ;
     uintptr_t lowest  = UINTPTR_MAX;
     uintptr_t highest = 0;

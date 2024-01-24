@@ -38,6 +38,7 @@ static uint32_t gen_orr(uint32_t dest, uint32_t src, uint32_t stack_size) {
 }
 
 bunki_t bunki_native_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg, uintptr_t stack_end) {
+    (void)stack_end; // Suppress unused warning
     uintptr_t stk = (uintptr_t)ctx;
     // If stack alignment does not match use a little space to fix that.
     stk &= BUNKI_ALIGN_MASK(ARCH_STK_ALIGN);

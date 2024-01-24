@@ -57,7 +57,8 @@ uint32_t bunki_stack_alignment(void) {
 }
 
 void* bunki_stack_ptr(bunki_t ctx) {
-    return (void*)get_stack_base(ctx);
+    uintptr_t ptr = get_stack_base(ctx);
+    return (void*)ptr;
 }
 
 void* bunki_stack_push(bunki_t* ctx, size_t allocation_length) {

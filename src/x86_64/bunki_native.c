@@ -11,6 +11,7 @@ extern uint32_t __bunki_patch3__;
 extern uint32_t __bunki_patch4__;
 
 bunki_t bunki_native_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* arg, uintptr_t stack_end) {
+
     uintptr_t stk = (uintptr_t)ctx;
     // If stack alignment does not match use a little space to fix that.
     stk &= BUNKI_ALIGN_MASK(ARCH_STK_ALIGN);
@@ -38,6 +39,8 @@ bunki_t bunki_native_finalize_ctx(bunki_t ctx, uintptr_t (*func)(void*), void* a
         new_ctx->stk_base    = stk;
         new_ctx->stk_limit   = stack_end;
         new_ctx->stk_dealloc = stack_end;
+    #else
+        (void)stack_end; // Suppress unused warning
     #endif
     return new_ctx;
 }
